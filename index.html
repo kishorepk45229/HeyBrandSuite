@@ -1,9 +1,381 @@
-<html>
-    <head>
-        <title>My Web Page</title>
-    </head>
-    <body>
-        <h1>Welcome to My Web Page</h1>
-        <p>This is a simple big brands.</p>
-    </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrandSuite Pro - Professional Social Media Card Creator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="nav-brand">
+                    <h2>BrandSuite Pro</h2>
+                </div>
+                <div class="nav-menu" id="navMenu">
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="#pricing" class="nav-link">Pricing</a>
+                    <a href="#" class="nav-link" id="loginBtn">Login</a>
+                    <button class="btn btn--primary" id="getStartedBtn">Get Started</button>
+                </div>
+                <button class="nav-toggle" id="navToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Landing Page -->
+    <main id="landingPage">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title">Create Professional Social Media Cards with Your Brand</h1>
+                    <p class="hero-subtitle">The complete brand suite platform for businesses and creators. Design stunning social media content that represents your brand perfectly.</p>
+                    <div class="hero-actions">
+                        <button class="btn btn--primary btn--lg" id="heroGetStarted">Get Started</button>
+                        <button class="btn btn--outline btn--lg" id="heroLogin">Login</button>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="hero-cards">
+                        <div class="hero-card card-1"></div>
+                        <div class="hero-card card-2"></div>
+                        <div class="hero-card card-3"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features" id="features">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Why Choose BrandSuite Pro?</h2>
+                    <p>Everything you need to create consistent, professional social media content for your brand.</p>
+                </div>
+                <div class="features-grid" id="featuresGrid">
+                    <!-- Features will be populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section class="pricing" id="pricing">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Choose Your Plan</h2>
+                    <p>Select the perfect plan for your brand's social media needs.</p>
+                    <div class="billing-toggle">
+                        <span class="toggle-label">Monthly</span>
+                        <button class="toggle-switch" id="billingToggle">
+                            <span class="toggle-slider"></span>
+                        </button>
+                        <span class="toggle-label">Annual <span class="save-badge">Save 20%</span></span>
+                    </div>
+                </div>
+                <div class="pricing-grid" id="pricingGrid">
+                    <!-- Pricing cards will be populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Dashboard (Hidden Initially) -->
+    <div id="dashboard" class="dashboard hidden">
+        <div class="dashboard-sidebar">
+            <div class="sidebar-header">
+                <h3>BrandSuite Pro</h3>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-view="dashboard">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+                <a href="#" class="nav-item" data-view="create">
+                    <span class="nav-icon">➕</span>
+                    Create New
+                </a>
+                <a href="#" class="nav-item" data-view="designs">
+                    <span class="nav-icon">🎨</span>
+                    My Designs
+                </a>
+                <a href="#" class="nav-item" data-view="brand">
+                    <span class="nav-icon">🏷️</span>
+                    Brand Kit
+                </a>
+                <a href="#" class="nav-item" id="logoutBtn">
+                    <span class="nav-icon">🚪</span>
+                    Logout
+                </a>
+            </nav>
+        </div>
+        <div class="dashboard-main">
+            <div class="dashboard-header">
+                <h1>Welcome back!</h1>
+                <div class="user-info">
+                    <span id="userNameDisplay">User</span>
+                    <div class="plan-badge" id="planBadge">Starter Plan</div>
+                </div>
+            </div>
+            <div class="dashboard-content" id="dashboardContent">
+                <!-- Content will be dynamically loaded -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Editor (Hidden Initially) -->
+    <div id="editor" class="editor hidden">
+        <div class="editor-header">
+            <div class="editor-actions-left">
+                <button class="btn btn--secondary" id="backToDashboard">← Back to Dashboard</button>
+                <h3 id="designTitle">New Design</h3>
+            </div>
+            <div class="editor-actions-right">
+                <button class="btn btn--outline" id="undoBtn">Undo</button>
+                <button class="btn btn--outline" id="redoBtn">Redo</button>
+                <button class="btn btn--secondary" id="previewBtn">Preview</button>
+                <button class="btn btn--primary" id="saveBtn">Save</button>
+                <button class="btn btn--primary" id="exportBtn">Export</button>
+            </div>
+        </div>
+        <div class="editor-workspace">
+            <div class="editor-sidebar-left">
+                <div class="sidebar-tabs">
+                    <button class="tab-btn active" data-tab="templates">Templates</button>
+                    <button class="tab-btn" data-tab="elements">Elements</button>
+                    <button class="tab-btn" data-tab="brand">Brand Kit</button>
+                </div>
+                <div class="tab-content active" id="templatesTab">
+                    <div class="template-categories" id="templateCategories">
+                        <!-- Template categories will be populated -->
+                    </div>
+                </div>
+                <div class="tab-content" id="elementsTab">
+                    <div class="element-groups">
+                        <button class="element-btn">Add Text</button>
+                        <button class="element-btn">Add Shape</button>
+                        <button class="element-btn">Add Image</button>
+                    </div>
+                </div>
+                <div class="tab-content" id="brandTab">
+                    <div class="brand-elements" id="brandElements">
+                        <!-- Brand elements will be populated -->
+                    </div>
+                </div>
+            </div>
+            <div class="editor-canvas-area">
+                <div class="canvas-container">
+                    <canvas id="designCanvas" width="1080" height="1080"></canvas>
+                </div>
+            </div>
+            <div class="editor-sidebar-right">
+                <div class="layers-panel">
+                    <h4>Layers</h4>
+                    <div class="layers-list" id="layersList">
+                        <!-- Layers will be populated dynamically -->
+                    </div>
+                </div>
+                <div class="properties-panel">
+                    <h4>Properties</h4>
+                    <div class="property-controls" id="propertyControls">
+                        <p>Select an element to edit its properties</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Login to BrandSuite Pro</h3>
+                <button class="modal-close" id="loginClose">&times;</button>
+            </div>
+            <form id="loginForm" class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="loginEmail">Email or Username</label>
+                    <input type="text" id="loginEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="rememberMe"> Remember me
+                    </label>
+                </div>
+                <button type="submit" class="btn btn--primary btn--full-width">Login</button>
+                <p class="text-center mt-8">
+                    Don't have an account? 
+                    <a href="#" id="showSignup">Sign up here</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create Your Account</h3>
+                <button class="modal-close" id="signupClose">&times;</button>
+            </div>
+            <form id="signupForm" class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="signupName">Full Name</label>
+                    <input type="text" id="signupName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="signupEmail">Email Address</label>
+                    <input type="email" id="signupEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="agreeTerms" required> 
+                        I agree to the Terms of Service and Privacy Policy
+                    </label>
+                </div>
+                <button type="submit" class="btn btn--primary btn--full-width">Create Account</button>
+                <p class="text-center mt-8">
+                    Already have an account? 
+                    <a href="#" id="showLogin">Login here</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Brand Setup Modal -->
+    <div id="brandSetupModal" class="modal hidden">
+        <div class="modal-content brand-setup-modal">
+            <div class="modal-header">
+                <h3>Welcome! Let's Set Up Your Brand</h3>
+                <div class="setup-progress">
+                    <span class="progress-step active">1</span>
+                    <span class="progress-step">2</span>
+                    <span class="progress-step">3</span>
+                    <span class="progress-step">4</span>
+                </div>
+            </div>
+            <form id="brandSetupForm" class="modal-body">
+                <!-- Step 1: Brand Info -->
+                <div class="setup-step active" data-step="1">
+                    <h4>Brand Information</h4>
+                    <div class="form-group">
+                        <label class="form-label" for="brandName">Brand Name</label>
+                        <input type="text" id="brandName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="brandDescription">Brand Description (Optional)</label>
+                        <textarea id="brandDescription" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <!-- Step 2: Logo Upload -->
+                <div class="setup-step" data-step="2">
+                    <h4>Brand Logo</h4>
+                    <div class="logo-upload-area" id="logoUploadArea">
+                        <div class="upload-placeholder">
+                            <span class="upload-icon">📁</span>
+                            <p>Drag & drop your logo here or click to browse</p>
+                            <input type="file" id="logoUpload" accept="image/*" hidden>
+                        </div>
+                        <div class="logo-preview" id="logoPreview" style="display: none;">
+                            <img id="logoImg" alt="Brand logo">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Brand Colors -->
+                <div class="setup-step" data-step="3">
+                    <h4>Brand Colors</h4>
+                    <div class="color-inputs">
+                        <div class="form-group">
+                            <label class="form-label" for="primaryColor">Primary Color</label>
+                            <div class="color-input-group">
+                                <input type="color" id="primaryColor" value="#1FB8CD">
+                                <input type="text" id="primaryColorText" class="form-control" value="#1FB8CD">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="secondaryColor">Secondary Color</label>
+                            <div class="color-input-group">
+                                <input type="color" id="secondaryColor" value="#5D878F">
+                                <input type="text" id="secondaryColorText" class="form-control" value="#5D878F">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="accentColor">Accent Color</label>
+                            <div class="color-input-group">
+                                <input type="color" id="accentColor" value="#FFC185">
+                                <input type="text" id="accentColorText" class="form-control" value="#FFC185">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Contact Information -->
+                <div class="setup-step" data-step="4">
+                    <h4>Contact Information</h4>
+                    <div class="form-group">
+                        <label class="form-label" for="contactEmail">Email Address</label>
+                        <input type="email" id="contactEmail" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="contactPhone">Phone Number</label>
+                        <input type="tel" id="contactPhone" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="contactWebsite">Website URL</label>
+                        <input type="url" id="contactWebsite" class="form-control">
+                    </div>
+                </div>
+
+                <div class="setup-actions">
+                    <button type="button" class="btn btn--outline" id="skipStep">Skip for now</button>
+                    <button type="button" class="btn btn--secondary" id="prevStep" style="display: none;">Previous</button>
+                    <button type="button" class="btn btn--primary" id="nextStep">Next</button>
+                    <button type="submit" class="btn btn--primary" id="completeBrandSetup" style="display: none;">Complete Setup</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Template Selection Modal -->
+    <div id="templateModal" class="modal hidden">
+        <div class="modal-content template-modal">
+            <div class="modal-header">
+                <h3>Choose a Template</h3>
+                <button class="modal-close" id="templateClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="platform-selector">
+                    <select id="platformSelect" class="form-control">
+                        <option value="">Select Platform</option>
+                    </select>
+                </div>
+                <div class="template-grid" id="templateGrid">
+                    <!-- Templates will be populated -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
 </html>
