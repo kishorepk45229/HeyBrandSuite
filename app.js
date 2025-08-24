@@ -1,1217 +1,620 @@
-// BrandSuite Pro Application Logic
-
-// Application data from the provided JSON
-const appData = {
-  pricingPlans: [
-    {
-      name: "Starter",
-      price: { monthly: 9, annual: 96 },
-      posts: "5-10 posts/month",
-      features: ["Basic templates", "1 brand kit", "Standard export", "Email support"],
-      popular: false
-    },
-    {
-      name: "Professional", 
-      price: { monthly: 24, annual: 240 },
-      posts: "10-20 posts/month",
-      features: ["Premium templates", "3 brand kits", "HD export", "Priority support", "Team collaboration"],
-      popular: true
-    },
-    {
-      name: "Business",
-      price: { monthly: 49, annual: 490 },
-      posts: "30-40 posts/month", 
-      features: ["Unlimited templates", "10 brand kits", "4K export", "Advanced analytics", "API access"],
-      popular: false
-    },
-    {
-      name: "Enterprise",
-      price: { monthly: "Custom", annual: "Custom" },
-      posts: "Unlimited posts",
-      features: ["White-label solution", "Unlimited brand kits", "Custom integrations", "Dedicated support", "SLA guarantee"],
-      popular: false
+class PostCraftApp {
+    constructor() {
+        this.currentTemplate = null;
+        this.brandSettings = this.loadBrandSettings();
+        this.templates = this.getTemplateData();
+        this.platformSizes = this.getPlatformSizes();
+        
+        this.init();
     }
-  ],
-  features: [
-    {
-      icon: "🎨",
-      title: "Brand Kit Management", 
-      description: "Store and manage your logos, colors, fonts, and brand guidelines in one centralized hub"
-    },
-    {
-      icon: "🖼️",
-      title: "Layer-Based Editor",
-      description: "Professional editing tools with full layer control, visibility toggles, and advanced manipulation"
-    },
-    {
-      icon: "📱",
-      title: "Multi-Platform Support",
-      description: "Templates optimized for Instagram, Facebook, Twitter, LinkedIn, and more social platforms"
-    },
-    {
-      icon: "👥", 
-      title: "Team Collaboration",
-      description: "Share brand kits and collaborate on designs with team members and stakeholders"
-    },
-    {
-      icon: "⚡",
-      title: "Brand Consistency", 
-      description: "Ensure consistent branding across all your social media content with automated checks"
-    },
-    {
-      icon: "🚀",
-      title: "Quick Export",
-      description: "Export designs in multiple formats and sizes optimized for each social media platform"
+
+    init() {
+        console.log('Initializing PostCraft App...');
+        this.setupNavigation();
+        this.setupTemplates();
+        this.setupBrandKit();
+        this.setupEditor();
+        this.setupEventListeners();
+        
+        // Load default section
+        this.showSection('dashboard');
     }
-  ],
-  socialPlatforms: [
-    { name: "Instagram Post", dimensions: "1080x1080", category: "social" },
-    { name: "Instagram Story", dimensions: "1080x1920", category: "social" },
-    { name: "Facebook Post", dimensions: "1200x630", category: "social" },
-    { name: "Twitter Header", dimensions: "1500x500", category: "social" },
-    { name: "LinkedIn Banner", dimensions: "1584x396", category: "professional" },
-    { name: "YouTube Thumbnail", dimensions: "1280x720", category: "video" }
-  ],
-  templateCategories: [
-    { name: "Promotional", count: 45, description: "Marketing and sales focused designs" },
-    { name: "Announcements", count: 32, description: "News and update templates" },
-    { name: "Quotes", count: 28, description: "Inspirational and motivational quotes" },
-    { name: "Events", count: 22, description: "Event promotion and invitation designs" },
-    { name: "Educational", count: 18, description: "Informational and learning content" }
-  ]
-};
 
-// Application State
-let currentUser = null;
-let currentBrandKit = null;
-let isAnnualBilling = false;
-let currentView = 'landing';
-let currentDesign = null;
-let canvasLayers = [];
-let selectedLayer = null;
-let brandSetupStep = 1;
+    // Template Data
+    getTemplateData() {
+        return [
+            {
+                id: "business-1",
+                category: "business",
+                name: "Corporate Announcement",
+                description: "Professional layout for business updates",
+                gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                textColor: "#ffffff",
+                title: "Big News!",
+                subtitle: "We're expanding our services",
+                content: "Exciting developments ahead for our company and valued clients."
+            },
+            {
+                id: "business-2", 
+                category: "business",
+                name: "Team Introduction",
+                description: "Introduce team members professionally",
+                gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                textColor: "#ffffff",
+                title: "Meet Our Team",
+                subtitle: "Sarah Johnson, Marketing Director",
+                content: "Leading innovative campaigns with creative excellence."
+            },
+            {
+                id: "lifestyle-1",
+                category: "lifestyle",
+                name: "Daily Inspiration",
+                description: "Motivational content for daily engagement",
+                gradient: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                textColor: "#2d3748",
+                title: "Monday Motivation",
+                subtitle: "Start your week strong",
+                content: "Every small step counts towards your bigger goals."
+            },
+            {
+                id: "lifestyle-2",
+                category: "lifestyle",
+                name: "Behind the Scenes",
+                description: "Share authentic moments",
+                gradient: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+                textColor: "#2d3748",
+                title: "Behind the Scenes",
+                subtitle: "A peek into our daily workflow",
+                content: "Authenticity builds stronger connections with our audience."
+            },
+            {
+                id: "promotional-1",
+                category: "promotional",
+                name: "Special Offer",
+                description: "Eye-catching promotion design",
+                gradient: "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",
+                textColor: "#2d3748",
+                title: "50% OFF",
+                subtitle: "Limited Time Offer",
+                content: "Don't miss out on our biggest sale of the year!"
+            },
+            {
+                id: "promotional-2",
+                category: "promotional",
+                name: "Product Launch",
+                description: "Announce new products effectively",
+                gradient: "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)",
+                textColor: "#ffffff",
+                title: "New Product Launch",
+                subtitle: "Innovation meets excellence",
+                content: "Discover what's possible with our latest creation."
+            },
+            {
+                id: "quotes-1",
+                category: "quotes",
+                name: "Motivational Quote",
+                description: "Share inspiring messages",
+                gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                textColor: "#ffffff",
+                title: "\"Success is not final, failure is not fatal\"",
+                subtitle: "- Winston Churchill",
+                content: "It is the courage to continue that counts."
+            },
+            {
+                id: "quotes-2",
+                category: "quotes",
+                name: "Wisdom Wednesday",
+                description: "Weekly wisdom sharing",
+                gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                textColor: "#ffffff",
+                title: "\"Innovation distinguishes between a leader and a follower\"",
+                subtitle: "- Steve Jobs",
+                content: "Think different, make a difference."
+            },
+            {
+                id: "product-1",
+                category: "product",
+                name: "Feature Highlight",
+                description: "Showcase product features",
+                gradient: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+                textColor: "#2d3748",
+                title: "New Features",
+                subtitle: "Enhanced user experience",
+                content: "Discover powerful new capabilities in our latest update."
+            },
+            {
+                id: "product-2",
+                category: "product",
+                name: "Product Benefits",
+                description: "Highlight key benefits",
+                gradient: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                textColor: "#2d3748",
+                title: "Why Choose Us?",
+                subtitle: "Quality meets innovation",
+                content: "Experience the difference with our premium solutions."
+            },
+            {
+                id: "events-1",
+                category: "events",
+                name: "Event Invitation",
+                description: "Invite attendees to events",
+                gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                textColor: "#ffffff",
+                title: "You're Invited!",
+                subtitle: "Annual Company Meetup",
+                content: "Join us for networking, insights, and great conversations."
+            },
+            {
+                id: "events-2",
+                category: "events",
+                name: "Webinar Announcement",
+                description: "Promote online events",
+                gradient: "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",
+                textColor: "#2d3748",
+                title: "Free Webinar",
+                subtitle: "Digital Marketing Trends 2025",
+                content: "Learn from industry experts and grow your business."
+            }
+        ];
+    }
 
-// Initialize Application
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('Initializing BrandSuite Pro...');
-  initializeApp();
-  populateFeatures();
-  populatePricing();
-  setupEventListeners();
-  setupBrandSetupWizard();
+    getPlatformSizes() {
+        return {
+            "instagram-square": { width: 1080, height: 1080, name: "Instagram Square" },
+            "instagram-story": { width: 1080, height: 1920, name: "Instagram Story" },
+            "facebook-post": { width: 1200, height: 630, name: "Facebook Post" },
+            "linkedin-post": { width: 1200, height: 627, name: "LinkedIn Post" },
+            "twitter-post": { width: 1600, height: 900, name: "Twitter Post" }
+        };
+    }
+
+    // Navigation
+    setupNavigation() {
+        const navItems = document.querySelectorAll('.nav-item');
+        console.log('Setting up navigation for', navItems.length, 'items');
+        
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const section = item.dataset.section;
+                console.log('Navigation clicked:', section);
+                this.showSection(section);
+                
+                // Update active states
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+    }
+
+    showSection(sectionName) {
+        console.log('Showing section:', sectionName);
+        const sections = document.querySelectorAll('.content-section');
+        sections.forEach(section => {
+            section.classList.remove('active');
+        });
+        
+        const targetSection = document.getElementById(`${sectionName}-section`);
+        if (targetSection) {
+            targetSection.classList.add('active');
+            targetSection.classList.add('fade-in');
+        } else {
+            console.error('Section not found:', `${sectionName}-section`);
+        }
+    }
+
+    // Templates
+    setupTemplates() {
+        this.renderTemplates();
+        this.setupTemplateFilters();
+    }
+
+    renderTemplates(filter = 'all') {
+        const templatesGrid = document.getElementById('templates-grid');
+        if (!templatesGrid) {
+            console.error('Templates grid not found');
+            return;
+        }
+
+        const filteredTemplates = filter === 'all' 
+            ? this.templates 
+            : this.templates.filter(template => template.category === filter);
+
+        console.log('Rendering templates:', filteredTemplates.length, 'for filter:', filter);
+
+        templatesGrid.innerHTML = filteredTemplates.map(template => `
+            <div class="template-card" data-template-id="${template.id}">
+                <div class="template-preview" style="background: ${template.gradient};">
+                    <div>
+                        <h3 style="color: ${template.textColor};">${template.title}</h3>
+                        <p style="color: ${template.textColor};">${template.subtitle}</p>
+                    </div>
+                </div>
+                <div class="template-info">
+                    <h4>${template.name}</h4>
+                    <p>${template.description}</p>
+                </div>
+            </div>
+        `).join('');
+
+        // Add click handlers to template cards
+        const templateCards = templatesGrid.querySelectorAll('.template-card');
+        templateCards.forEach(card => {
+            card.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const templateId = card.dataset.templateId;
+                console.log('Template card clicked:', templateId);
+                this.selectTemplate(templateId);
+            });
+        });
+    }
+
+    setupTemplateFilters() {
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        console.log('Setting up template filters for', filterBtns.length, 'buttons');
+        
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const category = btn.dataset.category;
+                console.log('Filter clicked:', category);
+                
+                // Update active filter
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Render filtered templates
+                this.renderTemplates(category);
+            });
+        });
+    }
+
+    selectTemplate(templateId) {
+        const template = this.templates.find(t => t.id === templateId);
+        if (!template) {
+            console.error('Template not found:', templateId);
+            return;
+        }
+
+        console.log('Template selected:', template);
+        this.currentTemplate = template;
+        this.showSection('editor');
+        this.updateNavActiveState('editor');
+        this.loadTemplateIntoEditor(template);
+        this.showToast('Template loaded successfully!');
+    }
+
+    updateNavActiveState(section) {
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.classList.remove('active');
+            if (item.dataset.section === section) {
+                item.classList.add('active');
+            }
+        });
+    }
+
+    // Brand Kit
+    setupBrandKit() {
+        this.setupColorPickers();
+        this.setupBrandKitSave();
+        this.setupLogoUpload();
+        this.loadBrandKitSettings();
+    }
+
+    setupColorPickers() {
+        const colorInputs = document.querySelectorAll('input[type="color"]');
+        console.log('Setting up color pickers for', colorInputs.length, 'inputs');
+        
+        colorInputs.forEach(input => {
+            input.addEventListener('input', (e) => {
+                const colorValue = e.target.nextElementSibling;
+                if (colorValue && colorValue.classList.contains('color-value')) {
+                    colorValue.textContent = e.target.value;
+                }
+                this.updatePreviewColors();
+            });
+        });
+    }
+
+    setupBrandKitSave() {
+        const saveBtn = document.getElementById('save-brand-kit');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.saveBrandSettings();
+                this.showToast('Brand kit saved successfully!');
+            });
+        }
+    }
+
+    setupLogoUpload() {
+        const uploadArea = document.querySelector('.logo-upload-area');
+        const fileInput = document.getElementById('logo-upload');
+        
+        if (uploadArea && fileInput) {
+            uploadArea.addEventListener('click', (e) => {
+                e.preventDefault();
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    this.showToast('Logo uploaded successfully!');
+                }
+            });
+        }
+    }
+
+    saveBrandSettings() {
+        const settings = {
+            primaryColor: document.getElementById('primary-color')?.value || '#6366f1',
+            secondaryColor: document.getElementById('secondary-color')?.value || '#8b5cf6',
+            accentColor: document.getElementById('accent-color')?.value || '#06b6d4',
+            primaryFont: document.getElementById('primary-font')?.value || 'Inter',
+            brandName: document.getElementById('brand-name')?.value || ''
+        };
+        
+        this.brandSettings = settings;
+        console.log('Brand settings saved:', settings);
+    }
+
+    loadBrandSettings() {
+        return {
+            primaryColor: '#6366f1',
+            secondaryColor: '#8b5cf6',
+            accentColor: '#06b6d4',
+            primaryFont: 'Inter',
+            brandName: 'PostCraft'
+        };
+    }
+
+    loadBrandKitSettings() {
+        if (this.brandSettings) {
+            const primaryColorInput = document.getElementById('primary-color');
+            const secondaryColorInput = document.getElementById('secondary-color');
+            const accentColorInput = document.getElementById('accent-color');
+            const primaryFontSelect = document.getElementById('primary-font');
+            const brandNameInput = document.getElementById('brand-name');
+            
+            if (primaryColorInput) {
+                primaryColorInput.value = this.brandSettings.primaryColor;
+                const colorValue = primaryColorInput.nextElementSibling;
+                if (colorValue) colorValue.textContent = this.brandSettings.primaryColor;
+            }
+            
+            if (secondaryColorInput) {
+                secondaryColorInput.value = this.brandSettings.secondaryColor;
+                const colorValue = secondaryColorInput.nextElementSibling;
+                if (colorValue) colorValue.textContent = this.brandSettings.secondaryColor;
+            }
+            
+            if (accentColorInput) {
+                accentColorInput.value = this.brandSettings.accentColor;
+                const colorValue = accentColorInput.nextElementSibling;
+                if (colorValue) colorValue.textContent = this.brandSettings.accentColor;
+            }
+            
+            if (primaryFontSelect) {
+                primaryFontSelect.value = this.brandSettings.primaryFont;
+            }
+            
+            if (brandNameInput) {
+                brandNameInput.value = this.brandSettings.brandName;
+            }
+        }
+    }
+
+    // Editor
+    setupEditor() {
+        this.setupTextEditor();
+        this.setupPlatformSelector();
+        this.setupEditorActions();
+    }
+
+    setupTextEditor() {
+        const titleInput = document.getElementById('edit-title');
+        const subtitleInput = document.getElementById('edit-subtitle');
+        const contentInput = document.getElementById('edit-content');
+        const fontSizeSelect = document.getElementById('font-size-select');
+        const textColorInput = document.getElementById('text-color');
+
+        console.log('Setting up text editor controls');
+
+        [titleInput, subtitleInput, contentInput].forEach(input => {
+            if (input) {
+                input.addEventListener('input', () => {
+                    console.log('Text input changed:', input.id);
+                    this.updatePreview();
+                });
+            }
+        });
+
+        if (fontSizeSelect) {
+            fontSizeSelect.addEventListener('change', () => {
+                console.log('Font size changed:', fontSizeSelect.value);
+                this.updatePreview();
+            });
+        }
+
+        if (textColorInput) {
+            textColorInput.addEventListener('input', () => {
+                console.log('Text color changed:', textColorInput.value);
+                this.updatePreview();
+            });
+        }
+    }
+
+    setupPlatformSelector() {
+        const platformSelect = document.getElementById('platform-select');
+        if (platformSelect) {
+            platformSelect.addEventListener('change', () => {
+                console.log('Platform changed:', platformSelect.value);
+                this.updatePreviewSize();
+            });
+        }
+    }
+
+    setupEditorActions() {
+        const backBtn = document.getElementById('back-to-templates');
+        const downloadBtn = document.getElementById('download-post');
+
+        if (backBtn) {
+            backBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Back to templates clicked');
+                this.showSection('templates');
+                this.updateNavActiveState('templates');
+            });
+        }
+
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Download post clicked');
+                this.downloadPost();
+            });
+        }
+    }
+
+    loadTemplateIntoEditor(template) {
+        console.log('Loading template into editor:', template);
+        
+        const titleInput = document.getElementById('edit-title');
+        const subtitleInput = document.getElementById('edit-subtitle');
+        const contentInput = document.getElementById('edit-content');
+        const textColorInput = document.getElementById('text-color');
+
+        if (titleInput) titleInput.value = template.title;
+        if (subtitleInput) subtitleInput.value = template.subtitle;
+        if (contentInput) contentInput.value = template.content;
+        if (textColorInput) textColorInput.value = template.textColor;
+
+        // Update preview immediately
+        setTimeout(() => {
+            this.updatePreview();
+        }, 100);
+    }
+
+    updatePreview() {
+        const previewPost = document.getElementById('preview-post');
+        const titleInput = document.getElementById('edit-title');
+        const subtitleInput = document.getElementById('edit-subtitle');
+        const contentInput = document.getElementById('edit-content');
+        const fontSizeSelect = document.getElementById('font-size-select');
+        const textColorInput = document.getElementById('text-color');
+
+        if (!previewPost || !this.currentTemplate) {
+            console.log('Cannot update preview - missing elements');
+            return;
+        }
+
+        console.log('Updating preview');
+
+        const postTitle = previewPost.querySelector('.post-title');
+        const postSubtitle = previewPost.querySelector('.post-subtitle');
+        const postText = previewPost.querySelector('.post-text');
+
+        if (postTitle && titleInput) {
+            postTitle.textContent = titleInput.value || this.currentTemplate.title;
+        }
+        if (postSubtitle && subtitleInput) {
+            postSubtitle.textContent = subtitleInput.value || this.currentTemplate.subtitle;
+        }
+        if (postText && contentInput) {
+            postText.textContent = contentInput.value || this.currentTemplate.content;
+        }
+
+        // Update styling
+        const fontSize = fontSizeSelect?.value || '20px';
+        const textColor = textColorInput?.value || this.currentTemplate.textColor;
+
+        if (postTitle) postTitle.style.color = textColor;
+        if (postSubtitle) postSubtitle.style.color = textColor;
+        if (postText) postText.style.color = textColor;
+
+        // Apply template background
+        previewPost.style.background = this.currentTemplate.gradient;
+    }
+
+    updatePreviewSize() {
+        const platformSelect = document.getElementById('platform-select');
+        const previewPost = document.getElementById('preview-post');
+        
+        if (!platformSelect || !previewPost) return;
+
+        const platform = platformSelect.value;
+        console.log('Updating preview size for platform:', platform);
+        
+        // Remove all platform classes
+        previewPost.className = 'preview-post';
+        
+        // Add new platform class
+        previewPost.classList.add(platform);
+    }
+
+    updatePreviewColors() {
+        // This would update preview with brand colors if needed
+        // For now, keeping template's original colors
+    }
+
+    downloadPost() {
+        // Simulate download process
+        const downloadBtn = document.getElementById('download-post');
+        if (downloadBtn) {
+            const originalHtml = downloadBtn.innerHTML;
+            downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading...';
+            downloadBtn.disabled = true;
+            
+            setTimeout(() => {
+                downloadBtn.innerHTML = originalHtml;
+                downloadBtn.disabled = false;
+                this.showToast('Post downloaded successfully!');
+            }, 2000);
+        }
+    }
+
+    // Event Listeners
+    setupEventListeners() {
+        // Quick start button
+        const quickStartBtn = document.querySelector('.quick-start-btn');
+        if (quickStartBtn) {
+            quickStartBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Quick start clicked');
+                this.showSection('templates');
+                this.updateNavActiveState('templates');
+            });
+        }
+
+        // Prevent form submissions
+        document.addEventListener('submit', (e) => {
+            e.preventDefault();
+        });
+    }
+
+    // Utility Functions
+    showToast(message, type = 'success') {
+        console.log('Showing toast:', message);
+        const toast = document.getElementById('toast');
+        const toastMessage = document.querySelector('.toast-message');
+        
+        if (toast && toastMessage) {
+            toastMessage.textContent = message;
+            toast.classList.remove('hidden');
+            
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+    }
+}
+
+// Initialize the app when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, initializing PostCraft App');
+    window.app = new PostCraftApp();
 });
-
-function initializeApp() {
-  // Check if user is returning (simulate session)
-  const userData = getSimulatedUserData();
-  if (userData) {
-    currentUser = userData.user;
-    currentBrandKit = userData.brandKit;
-    showDashboard();
-  } else {
-    showLandingPage();
-  }
-}
-
-// Simulated user data (since we can't use localStorage)
-function getSimulatedUserData() {
-  // Return null to simulate no existing session
-  return null;
-}
-
-function saveUserData(user, brandKit) {
-  // Simulate saving data (in real app would use backend API)
-  currentUser = user;
-  currentBrandKit = brandKit;
-}
-
-// Populate Features Section
-function populateFeatures() {
-  const featuresGrid = document.getElementById('featuresGrid');
-  if (!featuresGrid) return;
-  
-  featuresGrid.innerHTML = appData.features.map(feature => `
-    <div class="feature-card">
-      <span class="feature-icon">${feature.icon}</span>
-      <h3 class="feature-title">${feature.title}</h3>
-      <p class="feature-description">${feature.description}</p>
-    </div>
-  `).join('');
-}
-
-// Populate Pricing Section
-function populatePricing() {
-  const pricingGrid = document.getElementById('pricingGrid');
-  if (!pricingGrid) return;
-  
-  renderPricingCards();
-}
-
-function renderPricingCards() {
-  const pricingGrid = document.getElementById('pricingGrid');
-  if (!pricingGrid) return;
-  
-  pricingGrid.innerHTML = appData.pricingPlans.map(plan => {
-    const price = typeof plan.price.monthly === 'number' 
-      ? (isAnnualBilling ? plan.price.annual : plan.price.monthly)
-      : plan.price.monthly;
-    
-    const period = typeof price === 'number' 
-      ? (isAnnualBilling ? '/year' : '/month')
-      : '';
-    
-    return `
-      <div class="pricing-card ${plan.popular ? 'popular' : ''}">
-        <h3 class="plan-name">${plan.name}</h3>
-        <div class="plan-price">
-          ${typeof price === 'number' ? `<span class="currency">$</span>${price}` : price}
-          <span class="period">${period}</span>
-        </div>
-        <p class="plan-posts">${plan.posts}</p>
-        <ul class="plan-features">
-          ${plan.features.map(feature => `<li>${feature}</li>`).join('')}
-        </ul>
-        <button class="btn btn--primary btn--full-width plan-select-btn" data-plan="${plan.name}">
-          ${plan.name === 'Enterprise' ? 'Contact Sales' : 'Choose Plan'}
-        </button>
-      </div>
-    `;
-  }).join('');
-  
-  // Add event listeners to plan buttons
-  document.querySelectorAll('.plan-select-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const planName = this.getAttribute('data-plan');
-      selectPlan(planName);
-    });
-  });
-}
-
-// Event Listeners Setup
-function setupEventListeners() {
-  console.log('Setting up event listeners...');
-  
-  // Navigation - Use event delegation for better reliability
-  document.addEventListener('click', function(e) {
-    // Handle navigation toggle
-    if (e.target.matches('#navToggle, #navToggle *')) {
-      e.preventDefault();
-      toggleMobileMenu();
-      return;
-    }
-    
-    // Handle login button
-    if (e.target.matches('#loginBtn')) {
-      e.preventDefault();
-      showModal('login');
-      return;
-    }
-    
-    // Handle get started buttons
-    if (e.target.matches('#getStartedBtn, #heroGetStarted')) {
-      e.preventDefault();
-      showModal('signup');
-      return;
-    }
-    
-    // Handle hero login button
-    if (e.target.matches('#heroLogin')) {
-      e.preventDefault();
-      showModal('login');
-      return;
-    }
-    
-    // Handle modal close buttons
-    if (e.target.matches('#loginClose')) {
-      hideModal('login');
-      return;
-    }
-    
-    if (e.target.matches('#signupClose')) {
-      hideModal('signup');
-      return;
-    }
-    
-    if (e.target.matches('#templateClose')) {
-      hideModal('template');
-      return;
-    }
-    
-    // Handle modal switching
-    if (e.target.matches('#showSignup')) {
-      e.preventDefault();
-      hideModal('login');
-      showModal('signup');
-      return;
-    }
-    
-    if (e.target.matches('#showLogin')) {
-      e.preventDefault();
-      hideModal('signup');
-      showModal('login');
-      return;
-    }
-    
-    // Handle logout
-    if (e.target.matches('#logoutBtn')) {
-      e.preventDefault();
-      handleLogout();
-      return;
-    }
-    
-    // Handle dashboard navigation
-    if (e.target.matches('.nav-item[data-view]')) {
-      e.preventDefault();
-      const view = e.target.getAttribute('data-view');
-      switchDashboardView(view);
-      
-      // Update active state
-      document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-      e.target.classList.add('active');
-      return;
-    }
-    
-    // Handle editor controls
-    if (e.target.matches('#backToDashboard')) {
-      showDashboard();
-      return;
-    }
-    
-    // Handle editor tabs
-    if (e.target.matches('.tab-btn')) {
-      const tabName = e.target.getAttribute('data-tab');
-      switchEditorTab(tabName);
-      return;
-    }
-    
-    // Handle element buttons
-    if (e.target.matches('.element-btn')) {
-      const text = e.target.textContent.toLowerCase();
-      if (text.includes('text')) addTextElement();
-      else if (text.includes('shape')) addShapeElement();
-      return;
-    }
-    
-    // Handle editor action buttons
-    if (e.target.matches('#saveBtn')) {
-      saveDesign();
-      return;
-    }
-    
-    if (e.target.matches('#exportBtn')) {
-      exportDesign();
-      return;
-    }
-    
-    // Close modals on outside click
-    if (e.target.matches('.modal')) {
-      hideAllModals();
-      return;
-    }
-  });
-  
-  // Smooth scrolling for navigation links
-  document.addEventListener('click', function(e) {
-    if (e.target.matches('a[href^="#"]')) {
-      const targetId = e.target.getAttribute('href');
-      if (targetId !== '#' && targetId !== '#pricing' && targetId !== '#features') {
-        e.preventDefault();
-        const targetElement = document.querySelector(targetId);
-        if (targetElement) {
-          targetElement.scrollIntoView({ behavior: 'smooth' });
-        }
-      } else if (targetId === '#features') {
-        e.preventDefault();
-        const featuresSection = document.getElementById('features');
-        if (featuresSection) {
-          featuresSection.scrollIntoView({ behavior: 'smooth' });
-        }
-      } else if (targetId === '#pricing') {
-        e.preventDefault();
-        const pricingSection = document.getElementById('pricing');
-        if (pricingSection) {
-          pricingSection.scrollIntoView({ behavior: 'smooth' });
-        }
-      }
-    }
-  });
-  
-  // Form submissions
-  document.addEventListener('submit', function(e) {
-    if (e.target.matches('#loginForm')) {
-      e.preventDefault();
-      handleLogin(e);
-      return;
-    }
-    
-    if (e.target.matches('#signupForm')) {
-      e.preventDefault();
-      handleSignup(e);
-      return;
-    }
-    
-    if (e.target.matches('#brandSetupForm')) {
-      e.preventDefault();
-      handleBrandSetup(e);
-      return;
-    }
-  });
-  
-  // Billing toggle - use setTimeout to ensure DOM is ready
-  setTimeout(() => {
-    const billingToggle = document.getElementById('billingToggle');
-    if (billingToggle) {
-      billingToggle.addEventListener('click', function() {
-        isAnnualBilling = !isAnnualBilling;
-        this.classList.toggle('active', isAnnualBilling);
-        renderPricingCards();
-      });
-    }
-  }, 100);
-  
-  // Canvas interaction
-  setTimeout(() => {
-    const designCanvas = document.getElementById('designCanvas');
-    if (designCanvas) {
-      setupCanvasInteractions();
-    }
-  }, 100);
-  
-  setupBrandSetupNavigation();
-}
-
-function setupBrandSetupNavigation() {
-  // Brand setup navigation - use event delegation
-  document.addEventListener('click', function(e) {
-    if (e.target.matches('#nextStep')) {
-      nextBrandStep();
-      return;
-    }
-    
-    if (e.target.matches('#prevStep')) {
-      prevBrandStep();
-      return;
-    }
-    
-    if (e.target.matches('#skipStep')) {
-      nextBrandStep();
-      return;
-    }
-    
-    if (e.target.matches('#completeBrandSetup')) {
-      completeBrandSetupHandler();
-      return;
-    }
-  });
-}
-
-// Mobile Menu Toggle
-function toggleMobileMenu() {
-  const navMenu = document.getElementById('navMenu');
-  const navToggle = document.getElementById('navToggle');
-  
-  if (navMenu) navMenu.classList.toggle('active');
-  if (navToggle) navToggle.classList.toggle('active');
-}
-
-// Modal Management
-function showModal(modalName) {
-  console.log(`Showing modal: ${modalName}`);
-  hideAllModals();
-  const modal = document.getElementById(`${modalName}Modal`);
-  if (modal) {
-    modal.classList.remove('hidden');
-    modal.classList.add('fade-in');
-    
-    // Reset brand setup step when opening brand setup modal
-    if (modalName === 'brandSetup') {
-      brandSetupStep = 1;
-      updateBrandSetupUI();
-    }
-  } else {
-    console.error(`Modal not found: ${modalName}Modal`);
-  }
-}
-
-function hideModal(modalName) {
-  const modal = document.getElementById(`${modalName}Modal`);
-  if (modal) {
-    modal.classList.add('hidden');
-  }
-}
-
-function hideAllModals() {
-  document.querySelectorAll('.modal').forEach(modal => {
-    modal.classList.add('hidden');
-  });
-}
-
-// Authentication Handlers
-function handleLogin(e) {
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
-  
-  console.log('Handling login for:', email);
-  
-  // Simulate login validation
-  if (email && password) {
-    const user = {
-      id: 1,
-      name: email.split('@')[0],
-      email: email,
-      plan: 'Starter'
-    };
-    
-    // Check if user has brand kit (simulate)
-    const hasBrandKit = false; // Simulate no existing brand kit
-    
-    currentUser = user;
-    hideModal('login');
-    
-    if (hasBrandKit) {
-      showDashboard();
-    } else {
-      showModal('brandSetup');
-    }
-  } else {
-    alert('Please enter both email and password');
-  }
-}
-
-function handleSignup(e) {
-  const name = document.getElementById('signupName').value;
-  const email = document.getElementById('signupEmail').value;
-  const password = document.getElementById('signupPassword').value;
-  const confirmPassword = document.getElementById('confirmPassword').value;
-  const agreeTerms = document.getElementById('agreeTerms').checked;
-  
-  console.log('Handling signup for:', email);
-  
-  if (!agreeTerms) {
-    alert('Please agree to the Terms of Service and Privacy Policy');
-    return;
-  }
-  
-  if (password !== confirmPassword) {
-    alert('Passwords do not match!');
-    return;
-  }
-  
-  if (name && email && password) {
-    const user = {
-      id: Date.now(),
-      name: name,
-      email: email,
-      plan: 'Starter'
-    };
-    
-    currentUser = user;
-    hideModal('signup');
-    showModal('brandSetup');
-  } else {
-    alert('Please fill in all required fields');
-  }
-}
-
-function handleLogout() {
-  currentUser = null;
-  currentBrandKit = null;
-  showLandingPage();
-}
-
-// Plan Selection
-function selectPlan(planName) {
-  console.log('Selecting plan:', planName);
-  
-  if (planName === 'Enterprise') {
-    alert('Our sales team will contact you within 24 hours!');
-    return;
-  }
-  
-  // If user is logged in, update their plan
-  if (currentUser) {
-    currentUser.plan = planName;
-    alert(`Successfully upgraded to ${planName} plan!`);
-  } else {
-    // Show signup with selected plan
-    showModal('signup');
-    // Could store selected plan to apply after signup
-  }
-}
-
-// Brand Setup Wizard
-function setupBrandSetupWizard() {
-  console.log('Setting up brand setup wizard...');
-  
-  // Logo upload handling
-  setTimeout(() => {
-    const logoUploadArea = document.getElementById('logoUploadArea');
-    const logoUpload = document.getElementById('logoUpload');
-    
-    if (logoUploadArea && logoUpload) {
-      logoUploadArea.addEventListener('click', () => logoUpload.click());
-      logoUploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        logoUploadArea.style.borderColor = 'var(--color-primary)';
-      });
-      logoUploadArea.addEventListener('dragleave', () => {
-        logoUploadArea.style.borderColor = 'var(--color-border)';
-      });
-      logoUploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        const files = e.dataTransfer.files;
-        if (files.length > 0 && files[0].type.startsWith('image/')) {
-          handleLogoUpload(files[0]);
-        }
-      });
-      
-      logoUpload.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-          handleLogoUpload(e.target.files[0]);
-        }
-      });
-    }
-    
-    // Color input synchronization
-    setupColorInputs();
-  }, 100);
-}
-
-function handleLogoUpload(file) {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const logoImg = document.getElementById('logoImg');
-    const logoPreview = document.getElementById('logoPreview');
-    const uploadPlaceholder = document.querySelector('.upload-placeholder');
-    
-    if (logoImg && logoPreview && uploadPlaceholder) {
-      logoImg.src = e.target.result;
-      logoPreview.style.display = 'block';
-      uploadPlaceholder.style.display = 'none';
-    }
-  };
-  reader.readAsDataURL(file);
-}
-
-function setupColorInputs() {
-  const colorPairs = [
-    ['primaryColor', 'primaryColorText'],
-    ['secondaryColor', 'secondaryColorText'],
-    ['accentColor', 'accentColorText']
-  ];
-  
-  colorPairs.forEach(([colorInput, textInput]) => {
-    const colorEl = document.getElementById(colorInput);
-    const textEl = document.getElementById(textInput);
-    
-    if (colorEl && textEl) {
-      colorEl.addEventListener('input', (e) => {
-        textEl.value = e.target.value;
-      });
-      
-      textEl.addEventListener('input', (e) => {
-        if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
-          colorEl.value = e.target.value;
-        }
-      });
-    }
-  });
-}
-
-function nextBrandStep() {
-  if (brandSetupStep < 4) {
-    brandSetupStep++;
-    updateBrandSetupUI();
-  }
-}
-
-function prevBrandStep() {
-  if (brandSetupStep > 1) {
-    brandSetupStep--;
-    updateBrandSetupUI();
-  }
-}
-
-function updateBrandSetupUI() {
-  // Update progress indicators
-  document.querySelectorAll('.progress-step').forEach((step, index) => {
-    step.classList.toggle('active', index + 1 <= brandSetupStep);
-  });
-  
-  // Show/hide steps
-  document.querySelectorAll('.setup-step').forEach((step, index) => {
-    step.classList.toggle('active', index + 1 === brandSetupStep);
-  });
-  
-  // Update buttons
-  const prevBtn = document.getElementById('prevStep');
-  const nextBtn = document.getElementById('nextStep');
-  const completeBtn = document.getElementById('completeBrandSetup');
-  
-  if (prevBtn) prevBtn.style.display = brandSetupStep > 1 ? 'block' : 'none';
-  if (nextBtn) nextBtn.style.display = brandSetupStep < 4 ? 'block' : 'none';
-  if (completeBtn) completeBtn.style.display = brandSetupStep === 4 ? 'block' : 'none';
-}
-
-function handleBrandSetup(e) {
-  completeBrandSetupHandler();
-}
-
-function completeBrandSetupHandler() {
-  console.log('Completing brand setup...');
-  
-  // Collect brand data
-  const brandData = {
-    name: document.getElementById('brandName')?.value || 'My Brand',
-    description: document.getElementById('brandDescription')?.value || '',
-    logo: document.getElementById('logoImg')?.src || null,
-    colors: {
-      primary: document.getElementById('primaryColor')?.value || '#1FB8CD',
-      secondary: document.getElementById('secondaryColor')?.value || '#5D878F',
-      accent: document.getElementById('accentColor')?.value || '#FFC185'
-    },
-    contact: {
-      email: document.getElementById('contactEmail')?.value || '',
-      phone: document.getElementById('contactPhone')?.value || '',
-      website: document.getElementById('contactWebsite')?.value || ''
-    }
-  };
-  
-  currentBrandKit = brandData;
-  saveUserData(currentUser, currentBrandKit);
-  
-  hideModal('brandSetup');
-  showDashboard();
-}
-
-// View Management
-function showLandingPage() {
-  currentView = 'landing';
-  const landingPage = document.getElementById('landingPage');
-  const dashboard = document.getElementById('dashboard');
-  const editor = document.getElementById('editor');
-  
-  if (landingPage) landingPage.classList.remove('hidden');
-  if (dashboard) dashboard.classList.add('hidden');
-  if (editor) editor.classList.add('hidden');
-}
-
-function showDashboard() {
-  currentView = 'dashboard';
-  const landingPage = document.getElementById('landingPage');
-  const dashboard = document.getElementById('dashboard');
-  const editor = document.getElementById('editor');
-  
-  if (landingPage) landingPage.classList.add('hidden');
-  if (dashboard) dashboard.classList.remove('hidden');
-  if (editor) editor.classList.add('hidden');
-  
-  // Update user info
-  const userNameDisplay = document.getElementById('userNameDisplay');
-  const planBadge = document.getElementById('planBadge');
-  
-  if (currentUser && userNameDisplay) {
-    userNameDisplay.textContent = currentUser.name;
-  }
-  
-  if (currentUser && planBadge) {
-    planBadge.textContent = `${currentUser.plan} Plan`;
-  }
-  
-  switchDashboardView('dashboard');
-}
-
-function showEditor(designType = null) {
-  currentView = 'editor';
-  const landingPage = document.getElementById('landingPage');
-  const dashboard = document.getElementById('dashboard');
-  const editor = document.getElementById('editor');
-  
-  if (landingPage) landingPage.classList.add('hidden');
-  if (dashboard) dashboard.classList.add('hidden');
-  if (editor) editor.classList.remove('hidden');
-  
-  initializeEditor(designType);
-}
-
-// Dashboard Views
-function switchDashboardView(view) {
-  const content = document.getElementById('dashboardContent');
-  if (!content) return;
-  
-  switch (view) {
-    case 'dashboard':
-      content.innerHTML = getDashboardHomeHTML();
-      setupDashboardHome();
-      break;
-    case 'create':
-      showModal('template');
-      populateTemplateModal();
-      break;
-    case 'designs':
-      content.innerHTML = getMyDesignsHTML();
-      break;
-    case 'brand':
-      content.innerHTML = getBrandKitHTML();
-      break;
-  }
-}
-
-function getDashboardHomeHTML() {
-  return `
-    <div class="quick-actions">
-      <div class="action-card" onclick="showTemplateModal()">
-        <span class="action-icon">➕</span>
-        <h3 class="action-title">Create New Card</h3>
-        <p class="action-description">Start designing your next social media post</p>
-      </div>
-      <div class="action-card" onclick="switchDashboardView('brand')">
-        <span class="action-icon">🎨</span>
-        <h3 class="action-title">Edit Brand Kit</h3>
-        <p class="action-description">Update your brand colors, logo, and assets</p>
-      </div>
-      <div class="action-card" onclick="switchDashboardView('designs')">
-        <span class="action-icon">📁</span>
-        <h3 class="action-title">My Designs</h3>
-        <p class="action-description">View and manage all your created designs</p>
-      </div>
-    </div>
-    
-    <div class="recent-designs">
-      <h2>Recent Designs</h2>
-      <div class="designs-grid">
-        <div class="design-placeholder">
-          <p>No designs yet. Create your first design to get started!</p>
-          <button class="btn btn--primary" onclick="showTemplateModal()">Create Design</button>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function getMyDesignsHTML() {
-  return `
-    <div class="designs-header">
-      <h2>My Designs</h2>
-      <button class="btn btn--primary" onclick="showTemplateModal()">Create New</button>
-    </div>
-    <div class="designs-grid">
-      <div class="design-placeholder">
-        <p>No designs found. Start creating to see them here!</p>
-        <button class="btn btn--outline" onclick="showTemplateModal()">Create Your First Design</button>
-      </div>
-    </div>
-  `;
-}
-
-function getBrandKitHTML() {
-  const brandKit = currentBrandKit || {};
-  return `
-    <div class="brand-kit-header">
-      <h2>Brand Kit</h2>
-      <button class="btn btn--outline" onclick="editBrandKit()">Edit Brand Kit</button>
-    </div>
-    
-    <div class="brand-kit-content">
-      <div class="brand-section">
-        <h3>Brand Information</h3>
-        <div class="card">
-          <div class="card__body">
-            <p><strong>Brand Name:</strong> ${brandKit.name || 'Not set'}</p>
-            <p><strong>Description:</strong> ${brandKit.description || 'Not set'}</p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="brand-section">
-        <h3>Brand Colors</h3>
-        <div class="color-palette">
-          <div class="color-item" style="margin-bottom: 8px;">
-            <div class="color-swatch" style="background: ${brandKit.colors?.primary || '#1FB8CD'}; width: 30px; height: 30px; border-radius: 4px; display: inline-block; margin-right: 8px;"></div>
-            <span>Primary: ${brandKit.colors?.primary || '#1FB8CD'}</span>
-          </div>
-          <div class="color-item" style="margin-bottom: 8px;">
-            <div class="color-swatch" style="background: ${brandKit.colors?.secondary || '#5D878F'}; width: 30px; height: 30px; border-radius: 4px; display: inline-block; margin-right: 8px;"></div>
-            <span>Secondary: ${brandKit.colors?.secondary || '#5D878F'}</span>
-          </div>
-          <div class="color-item" style="margin-bottom: 8px;">
-            <div class="color-swatch" style="background: ${brandKit.colors?.accent || '#FFC185'}; width: 30px; height: 30px; border-radius: 4px; display: inline-block; margin-right: 8px;"></div>
-            <span>Accent: ${brandKit.colors?.accent || '#FFC185'}</span>
-          </div>
-        </div>
-      </div>
-      
-      <div class="brand-section">
-        <h3>Contact Information</h3>
-        <div class="card">
-          <div class="card__body">
-            <p><strong>Email:</strong> ${brandKit.contact?.email || 'Not set'}</p>
-            <p><strong>Phone:</strong> ${brandKit.contact?.phone || 'Not set'}</p>
-            <p><strong>Website:</strong> ${brandKit.contact?.website || 'Not set'}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function setupDashboardHome() {
-  // Add any specific dashboard home interactions here
-}
-
-function editBrandKit() {
-  // Pre-populate brand setup modal with existing data
-  if (currentBrandKit) {
-    setTimeout(() => {
-      const brandName = document.getElementById('brandName');
-      const brandDescription = document.getElementById('brandDescription');
-      
-      if (brandName) brandName.value = currentBrandKit.name || '';
-      if (brandDescription) brandDescription.value = currentBrandKit.description || '';
-    }, 100);
-  }
-  showModal('brandSetup');
-}
-
-function showTemplateModal() {
-  showModal('template');
-  populateTemplateModal();
-}
-
-// Template Modal
-function populateTemplateModal() {
-  const platformSelect = document.getElementById('platformSelect');
-  const templateGrid = document.getElementById('templateGrid');
-  
-  if (platformSelect) {
-    platformSelect.innerHTML = '<option value="">Select Platform</option>' +
-      appData.socialPlatforms.map(platform => 
-        `<option value="${platform.name}">${platform.name} (${platform.dimensions})</option>`
-      ).join('');
-    
-    platformSelect.addEventListener('change', (e) => {
-      if (e.target.value) {
-        populateTemplatesForPlatform(e.target.value);
-      }
-    });
-  }
-  
-  if (templateGrid) {
-    templateGrid.innerHTML = `
-      <p class="text-center">Select a platform above to view available templates</p>
-    `;
-  }
-}
-
-function populateTemplatesForPlatform(platformName) {
-  const templateGrid = document.getElementById('templateGrid');
-  if (!templateGrid) return;
-  
-  // Generate sample templates for the platform
-  const templates = Array.from({length: 8}, (_, i) => ({
-    id: i + 1,
-    name: `Template ${i + 1}`,
-    platform: platformName,
-    category: appData.templateCategories[i % appData.templateCategories.length].name
-  }));
-  
-  templateGrid.innerHTML = templates.map(template => `
-    <div class="template-item" onclick="selectTemplate('${template.id}', '${platformName}')">
-      <h4>${template.name}</h4>
-      <p>${template.category}</p>
-    </div>
-  `).join('');
-}
-
-function selectTemplate(templateId, platformName) {
-  hideModal('template');
-  currentDesign = {
-    id: Date.now(),
-    templateId,
-    platform: platformName,
-    name: `New ${platformName} Design`
-  };
-  showEditor(currentDesign);
-}
-
-// Editor Functions
-function initializeEditor(design) {
-  const designCanvas = document.getElementById('designCanvas');
-  if (!designCanvas) return;
-  
-  console.log('Initializing editor with design:', design);
-  
-  // Set canvas size based on platform
-  const platform = appData.socialPlatforms.find(p => p.name === design?.platform);
-  if (platform) {
-    const [width, height] = platform.dimensions.split('x').map(Number);
-    designCanvas.width = width;
-    designCanvas.height = height;
-  }
-  
-  // Initialize canvas context
-  const ctx = designCanvas.getContext('2d');
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, designCanvas.width, designCanvas.height);
-  
-  // Initialize layers
-  canvasLayers = [
-    { id: 1, name: 'Background', type: 'background', visible: true, locked: false }
-  ];
-  
-  updateLayersPanel();
-  populateEditorSidebar();
-  
-  // Update design title
-  const designTitle = document.getElementById('designTitle');
-  if (design && designTitle) {
-    designTitle.textContent = design.name;
-  }
-}
-
-function setupCanvasInteractions() {
-  const canvas = document.getElementById('designCanvas');
-  if (!canvas) return;
-  
-  canvas.addEventListener('click', (e) => {
-    // Handle canvas clicks for selecting elements
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    // Find clicked layer (simplified)
-    console.log(`Canvas clicked at: ${x}, ${y}`);
-  });
-}
-
-function switchEditorTab(tabName) {
-  // Update tab buttons
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.getAttribute('data-tab') === tabName);
-  });
-  
-  // Update tab content
-  document.querySelectorAll('.tab-content').forEach(content => {
-    content.classList.toggle('active', content.id === `${tabName}Tab`);
-  });
-}
-
-function populateEditorSidebar() {
-  // Populate template categories
-  const categoriesContainer = document.getElementById('templateCategories');
-  if (categoriesContainer) {
-    categoriesContainer.innerHTML = appData.templateCategories.map(category => `
-      <button class="category-btn" onclick="loadCategoryTemplates('${category.name}')">
-        ${category.name} (${category.count})
-      </button>
-    `).join('');
-  }
-  
-  // Populate brand elements
-  const brandElements = document.getElementById('brandElements');
-  if (brandElements && currentBrandKit) {
-    brandElements.innerHTML = `
-      <div class="brand-colors">
-        <h5>Brand Colors</h5>
-        <div class="color-palette">
-          ${Object.entries(currentBrandKit.colors || {}).map(([name, color]) => `
-            <button class="color-btn" style="background: ${color}; width: 30px; height: 30px; border: 1px solid #ccc; border-radius: 4px; margin: 4px; cursor: pointer;" onclick="applyColor('${color}')" title="${name}"></button>
-          `).join('')}
-        </div>
-      </div>
-      <div class="brand-logo">
-        <h5>Logo</h5>
-        ${currentBrandKit.logo ? `
-          <button class="logo-btn" onclick="addLogo()" style="background: none; border: 1px solid #ccc; border-radius: 4px; padding: 8px; cursor: pointer;">
-            <img src="${currentBrandKit.logo}" alt="Brand logo" style="max-width: 100px; max-height: 50px;">
-          </button>
-        ` : '<p>No logo uploaded</p>'}
-      </div>
-    `;
-  }
-}
-
-function updateLayersPanel() {
-  const layersList = document.getElementById('layersList');
-  if (!layersList) return;
-  
-  layersList.innerHTML = canvasLayers.map(layer => `
-    <div class="layer-item ${selectedLayer === layer.id ? 'active' : ''}" onclick="selectLayer(${layer.id})">
-      <span class="layer-name">${layer.name}</span>
-      <div class="layer-controls">
-        <button class="layer-btn" onclick="toggleLayerVisibility(${layer.id})" title="Toggle visibility">
-          ${layer.visible ? '👁️' : '🚫'}
-        </button>
-        <button class="layer-btn" onclick="toggleLayerLock(${layer.id})" title="Toggle lock">
-          ${layer.locked ? '🔒' : '🔓'}
-        </button>
-        <button class="layer-btn" onclick="deleteLayer(${layer.id})" title="Delete layer">
-          🗑️
-        </button>
-      </div>
-    </div>
-  `).join('');
-}
-
-function selectLayer(layerId) {
-  selectedLayer = layerId;
-  updateLayersPanel();
-  updatePropertyControls();
-}
-
-function toggleLayerVisibility(layerId) {
-  const layer = canvasLayers.find(l => l.id === layerId);
-  if (layer) {
-    layer.visible = !layer.visible;
-    updateLayersPanel();
-    redrawCanvas();
-  }
-}
-
-function toggleLayerLock(layerId) {
-  const layer = canvasLayers.find(l => l.id === layerId);
-  if (layer) {
-    layer.locked = !layer.locked;
-    updateLayersPanel();
-  }
-}
-
-function deleteLayer(layerId) {
-  if (canvasLayers.length > 1) { // Keep at least one layer
-    canvasLayers = canvasLayers.filter(l => l.id !== layerId);
-    if (selectedLayer === layerId) {
-      selectedLayer = canvasLayers[0]?.id;
-    }
-    updateLayersPanel();
-    updatePropertyControls();
-    redrawCanvas();
-  }
-}
-
-function updatePropertyControls() {
-  const controls = document.getElementById('propertyControls');
-  if (!controls || !selectedLayer) return;
-  
-  const layer = canvasLayers.find(l => l.id === selectedLayer);
-  if (!layer) return;
-  
-  controls.innerHTML = `
-    <div class="property-group">
-      <label class="form-label">Layer Name</label>
-      <input type="text" class="form-control" value="${layer.name}" onchange="updateLayerName(${layer.id}, this.value)">
-    </div>
-    <div class="property-group">
-      <label class="form-label">Opacity</label>
-      <input type="range" class="form-control" min="0" max="100" value="100" onchange="updateLayerOpacity(${layer.id}, this.value)">
-    </div>
-  `;
-}
-
-function updateLayerName(layerId, newName) {
-  const layer = canvasLayers.find(l => l.id === layerId);
-  if (layer) {
-    layer.name = newName;
-    updateLayersPanel();
-  }
-}
-
-function redrawCanvas() {
-  const canvas = document.getElementById('designCanvas');
-  if (!canvas) return;
-  
-  const ctx = canvas.getContext('2d');
-  
-  // Clear canvas
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-  // Redraw all visible layers
-  canvasLayers.filter(layer => layer.visible).forEach(layer => {
-    // Simplified drawing - in real app would draw actual layer content
-    if (layer.type === 'background') {
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }
-  });
-}
-
-// Editor Actions
-function addTextElement() {
-  const newLayer = {
-    id: Date.now(),
-    name: 'Text Layer',
-    type: 'text',
-    visible: true,
-    locked: false,
-    content: 'Sample Text',
-    x: 100,
-    y: 100
-  };
-  
-  canvasLayers.push(newLayer);
-  updateLayersPanel();
-}
-
-function addShapeElement() {
-  const newLayer = {
-    id: Date.now(),
-    name: 'Shape Layer',
-    type: 'shape',
-    visible: true,
-    locked: false,
-    shape: 'rectangle',
-    x: 150,
-    y: 150
-  };
-  
-  canvasLayers.push(newLayer);
-  updateLayersPanel();
-}
-
-function saveDesign() {
-  if (currentDesign) {
-    // Simulate saving design
-    alert('Design saved successfully!');
-  }
-}
-
-function exportDesign() {
-  const canvas = document.getElementById('designCanvas');
-  if (canvas) {
-    // Create download link
-    const link = document.createElement('a');
-    link.download = `${currentDesign?.name || 'design'}.png`;
-    link.href = canvas.toDataURL();
-    link.click();
-  }
-}
-
-// Utility functions for brand kit integration
-function applyColor(color) {
-  console.log(`Applying color: ${color}`);
-  // In a real app, this would apply the color to the selected element
-}
-
-function addLogo() {
-  console.log('Adding brand logo to design');
-  // In a real app, this would add the logo as a new layer
-}
-
-function loadCategoryTemplates(categoryName) {
-  console.log(`Loading templates for category: ${categoryName}`);
-  // In a real app, this would load and display templates for the selected category
-}
-
-// Make functions globally available
-window.selectPlan = selectPlan;
-window.showTemplateModal = showTemplateModal;
-window.selectTemplate = selectTemplate;
-window.switchDashboardView = switchDashboardView;
-window.editBrandKit = editBrandKit;
-window.selectLayer = selectLayer;
-window.toggleLayerVisibility = toggleLayerVisibility;
-window.toggleLayerLock = toggleLayerLock;
-window.deleteLayer = deleteLayer;
-window.updateLayerName = updateLayerName;
-window.applyColor = applyColor;
-window.addLogo = addLogo;
-window.loadCategoryTemplates = loadCategoryTemplates;
